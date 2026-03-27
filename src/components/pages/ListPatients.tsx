@@ -14,10 +14,11 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
       Patient: p.name,
       Sexe: p.sexe,
       Age: p.age,
-      Adresse: p.adresse,
+      Quartier: p.adresse, // Quartier d'abord
+      Nationalite: p.nationalite || "N/A", // Puis Nationalité
       Motif: p.motif || "-",
       "Diagnostic/Test": p.diagnostic || p.test || "Consultation",
-      Examen: p.examan || p.examen || "-",
+      Examen: p.examen || p.examan || "-",
       Traitement: p.traitement || "-",
       Mode: session.mode,
     }));
@@ -41,9 +42,9 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
     );
   }
 
-  // Ordre des colonnes mis à jour dans le grid
+  // Layout mis à jour : Quartier (5ème col), Nationalité (6ème col)
   const gridLayout =
-    "grid-cols-[100px_1fr_60px_60px_1fr_1.2fr_1.2fr_1.5fr_1.5fr_1fr]";
+    "grid-cols-[90px_1.5fr_45px_45px_1fr_100px_1fr_1.2fr_1fr_1fr_70px]";
 
   return (
     <div className="max-w-462.5 mx-auto mt-10 space-y-6 pb-20 px-4">
@@ -54,7 +55,7 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
         {onClear && (
           <button
             onClick={onClear}
-            className="text-[9px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors cursor-pointer"
+            className="text-[9px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors cursor-pointer bg-red-50 px-3 py-1.5 rounded-xl border border-red-100"
           >
             Effacer Tout
           </button>
@@ -72,9 +73,9 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
             <span className="text-center">Sexe</span>
             <span className="text-center">Âge</span>
             <span>Quartier</span>
+            <span>Nationalité</span>
             <span className="text-violet-600">Motif</span>
-            <span className="text-indigo-600">Diagnostic / Test</span>{" "}
-            {/* Déplacé ici */}
+            <span className="text-indigo-600">Diagnostic / Test</span>
             <span className="text-violet-600">Examen</span>
             <span className="text-violet-600">Traitement</span>
             <span className="text-right">Mode</span>
@@ -82,24 +83,24 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
         </div>
 
         {/* Body */}
-        <div className="overflow-y-auto max-h-[75vh]">
+        <div className="overflow-y-auto max-h-[75vh] custom-scrollbar">
           {history.map((session, sIdx) => (
             <div key={session.id || sIdx} className="contents">
-              <div className="bg-violet-100/30 px-8 py-2 border-b border-violet-100 flex items-center justify-between">
+              <div className="bg-violet-100/30 px-8 py-2 border-b border-violet-100 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
                 <div className="flex items-center gap-4">
                   <span className="text-[10px] font-black text-violet-900">
                     {session.date}
                   </span>
                   <span className="text-[9px] font-bold text-violet-400 italic">
-                    REF: {session.id ? String(session.id).slice(0, 8) : sIdx}
+                    REF: {session.id ? String(session.id).slice(-6) : sIdx}
                   </span>
                 </div>
                 <button
                   onClick={() => exportGroupToExcel(session)}
-                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-full transition-all active:scale-95 shadow-sm"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-full shadow-sm transition-all active:scale-95"
                 >
-                  <span className="text-[9px] font-black uppercase tracking-tighter">
-                    Excel
+                  <span className="text-[9px] font-black uppercase">
+                    Exporter Session
                   </span>
                 </button>
               </div>
@@ -128,25 +129,29 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
                     <div className="text-center text-[10px] font-bold text-violet-500">
                       {p.age}
                     </div>
+
+                    {/* Quartier d'abord */}
                     <div className="text-[10px] text-violet-600 truncate">
                       {p.adresse}
                     </div>
 
-                    {/* Motif */}
+                    {/* Nationalité ensuite */}
+                    <div className="text-[10px] text-violet-600 font-bold uppercase truncate">
+                      {p.nationalite || "N/A"}
+                    </div>
+
                     <div className="text-[10px] text-violet-700 font-medium italic">
                       {p.motif || "-"}
                     </div>
 
-                    {/* Diagnostic / Test (Déplacé après Motif) */}
                     <div>
                       <span className="text-[9px] font-black text-indigo-900 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100">
                         {p.diagnostic || p.test || "CONSULTATION"}
                       </span>
                     </div>
 
-                    {/* Examen et Traitement */}
                     <div className="text-[10px] text-violet-700 font-medium">
-                      {p.examan || p.examen || "-"}
+                      {p.examen || p.examan || "-"}
                     </div>
                     <div className="text-[10px] text-violet-700 font-medium">
                       {p.traitement || "-"}
@@ -169,6 +174,7 @@ export default function ListPatients({ history, onClear }: ListPatientsProps) {
           ))}
         </div>
       </div>
+      <style>{`.custom-scrollbar::-webkit-scrollbar { width: 4px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #ddd6fe; border-radius: 10px; }`}</style>
     </div>
   );
 }

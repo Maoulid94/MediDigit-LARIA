@@ -36,3 +36,5 @@ export default defineConfig([
   },
 ]);
 ```
+
+> > > > > > > 051e6bc (update app.tsx)
