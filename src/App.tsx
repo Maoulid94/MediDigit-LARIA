@@ -16,7 +16,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Routes for different pages */}
         <Route path="/login" element={<Sign_In />} />
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegisterForm />} />
